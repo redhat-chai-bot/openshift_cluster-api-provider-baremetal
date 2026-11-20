@@ -4,6 +4,7 @@ IMG ?= controller:latest
 GOPATH=$(shell go env GOPATH)
 
 BIN_DIR := bin
+PROJECT_DIR := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 MOCKGEN := $(BIN_DIR)/mockgen
 SETUP_ENVTEST := $(BIN_DIR)/setup-envtest
 ENVTEST_K8S_VERSION := 1.29.x
@@ -31,7 +32,7 @@ unit: unit-test
 
 .PHONY: unit-test
 unit-test: $(SETUP_ENVTEST)
-	$(shell $(SETUP_ENVTEST) use -p env --os $(ENVTEST_OS) --arch $(ARCH) $(ENVTEST_K8S_VERSION)) && \
+	$(shell $(SETUP_ENVTEST) use -p env --os $(ENVTEST_OS) --arch $(ARCH) --bin-dir $(PROJECT_DIR)/bin --use-deprecated-gcs=false $(ENVTEST_K8S_VERSION)) && \
 		go test ./pkg/... ./cmd/... -coverprofile cover.out
 
 # Run against the configured Kubernetes cluster in ~/.kube/config
